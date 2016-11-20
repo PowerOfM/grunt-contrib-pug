@@ -26,7 +26,8 @@ module.exports = function(grunt) {
     var options = this.options({
       namespace: 'JST',
       separator: grunt.util.linefeed + grunt.util.linefeed,
-      amd: false
+      amd: false,
+      es6: false
     });
 
     var data = options.data;
@@ -89,6 +90,12 @@ module.exports = function(grunt) {
           if (options.client && options.amd && options.namespace === false) {
             compiled = 'return ' + compiled;
           }
+
+          // if configured for ES6 and the namespace has been explicitly set
+          // to false, the Pug template will be directly exported
+          if (options.client && options.es6 && options.namespace === false) {
+            compiled = 'export ' + compiled;
+          }
         } catch (e) {
           grunt.log.error(e);
           grunt.fail.warn('Pug failed to compile "' + filepath + '".');
@@ -128,6 +135,16 @@ module.exports = function(grunt) {
             output.push('return ' + nsInfo.namespace + ';');
           }
           output.push('});');
+        }
+
+        if (options.es6) {
+          // insert the pug-runtime using or import (ES6)
+          output.unshift('import * as pug from \'pug-runtime\';');
+          if (options.es6 && options.namespace !== false) {
+            // namespace has not been explicitly set to false;
+            // the ES6 wrapper will return the object containing the template
+            output.push('export ' + nsInfo.namespace + ';');
+          }
         }
 
         grunt.file.write(f.dest, output.join(grunt.util.normalizelf(options.separator)));

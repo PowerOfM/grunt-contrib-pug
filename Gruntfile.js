@@ -47,6 +47,25 @@ module.exports = function(grunt) {
         }
       },
 
+      compile_es6: {
+        files: {
+          'tmp/es6/pug.js': ['test/fixtures/pug.pug'],
+          'tmp/es6/pug2.js': ['test/fixtures/pug2.pug'],
+          'tmp/es6/pugInclude.js': ['test/fixtures/pugInclude.pug'],
+          'tmp/es6/pugTemplate.js': ['test/fixtures/pugTemplate.pug']
+        },
+        options: {
+          client: true,
+          es6: true,
+          namespace: false,
+          compileDebug: false,
+          data: {
+            test: true,
+            year: '<%= grunt.template.today("yyyy") %>'
+          }
+        }
+      },
+
       compile_amd: {
         files: {
           'tmp/amd/pug.js': ['test/fixtures/pug.pug'],
